@@ -1,5 +1,7 @@
 # HIMARI OPUS V2 - Layer 3 Position Sizing & Execution
 
+![HIMARI Visual](assets/himari_visual.png)
+
 **Version:** 3.1 Enhanced  
 **Status:** Phase 1 Deployed  
 **Budget:** $200/month (unchanged)  
