@@ -1,0 +1,100 @@
+# HIMARI OPUS V2 - Layer 3 Configuration
+# ========================================
+# Main configuration file for Layer 3 Position Sizing system
+# Supports hot-reload without restart
+
+position_sizing:
+  # Bayesian Kelly parameters
+  bayesian_kelly:
+    kelly_fraction: 0.25              # Quarter Kelly (conservative)
+    min_win_rate: 0.45                # Minimum win rate threshold
+    min_edge: 0.02                    # Minimum edge threshold (2%)
+    
+  # Conformal prediction parameters
+  conformal_prediction:
+    coverage: 0.90                    # 90% coverage level
+    window_size: 200                  # Residuals window
+    min_samples: 20                   # Min samples before activation
+    
+  # Regime adjustment parameters
+  regime_adjustment:
+    hysteresis_periods: 3             # Periods to confirm regime change
+    multipliers:
+      trending_up: 1.2                # 20% increase
+      trending_down: 0.8              # 20% decrease
+      ranging: 1.0                    # No change
+      high_volatility: 0.6            # 40% decrease
+      crisis: 0.2                     # 80% decrease
+
+risk_management:
+  # Portfolio-level limits
+  max_portfolio_allocation: 0.50     # 50% max capital deployed
+  max_drawdown_pct: 0.30              # 30% max drawdown
+  
+  # Strategy-level limits
+  max_strategy_allocation: 0.20      # 20% per strategy
+  
+  # Position-level limits
+  max_position_pct: 0.10              # 10% per symbol
+  max_leverage: 1.0                   # 1× leverage (spot only for Phase 1)
+  
+  # Cascade detection thresholds
+  cascade_thresholds:
+    funding_rate: 0.003               # 0.3% absolute
+    oi_drop: 0.10                     # 10% decline
+    volume_spike: 5.0                 # 5× average
+    whale_pressure: 0.7               # 0.7 normalized
+    netflow_zscore: 2.0               # 2-sigma event
+    
+  # Component weights for cascade detection
+  cascade_weights:
+    funding: 0.20
+    oi_drop: 0.25
+    volume_spike: 0.15
+    whale_pressure: 0.25              # NEW: On-chain
+    netflow: 0.15                     # NEW: On-chain
+
+sentiment:
+  # Optional sentiment-aware sizing
+  enabled: false                      # Disabled by default
+  weight: 0.15                        # 15% adjustment weight
+  
+circuit_breaker:
+  # Colab Pro API circuit breaker (Phase 3)
+  enabled: false                      # Disabled until Phase 3
+  failure_threshold: 5                # Failures to trigger OPEN
+  initial_timeout_sec: 30             # 30 seconds initial
+  max_timeout_sec: 300                # 5 minutes max
+  backoff_multiplier: 2.0             # Exponential backoff
+
+monitoring:
+  # Prometheus metrics
+  metrics_enabled: true
+  metrics_port: 9090
+  
+  # Logging
+  log_level: INFO                     # DEBUG, INFO, WARNING, ERROR
+  log_to_file: true
+  log_file_path: logs/layer3.log
+  
+  # Grafana dashboards
+  grafana_enabled: true
+  grafana_port: 3000
+
+validation_criteria:
+  # Layer 2 bridge validation rules
+  max_confidence: 1.0
+  min_confidence: 0.0
+  max_risk_score: 1.0
+  require_expected_return: false      # Optional field
+  require_volatility: false           # Optional field
+  
+  # Position size validation
+  min_position_usd: 10.0              # Minimum $10 position
+  max_position_usd: 50000.0           # Maximum $50k position
+
+# Hot-reload configuration
+hot_reload:
+  enabled: true
+  poll_interval_sec: 5                # Check every 5 seconds
+  validate_before_apply: true         # Validate before applying changes

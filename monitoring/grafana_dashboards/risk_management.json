@@ -1,0 +1,145 @@
+{
+    "dashboard": {
+        "title": "HIMARI Layer 3 - Risk Management",
+        "tags": [
+            "himari",
+            "layer3",
+            "risk"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "title": "Cascade Risk Score",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "himari_l3_cascade_risk_score",
+                        "legendFormat": "Risk Score"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 8
+                },
+                "alert": {
+                    "conditions": [
+                        {
+                            "evaluator": {
+                                "params": [
+                                    0.8
+                                ],
+                                "type": "gt"
+                            },
+                            "operator": {
+                                "type": "and"
+                            },
+                            "query": {
+                                "params": [
+                                    "A",
+                                    "5m",
+                                    "now"
+                                ]
+                            },
+                            "reducer": {
+                                "params": [],
+                                "type": "avg"
+                            },
+                            "type": "query"
+                        }
+                    ],
+                    "name": "High Cascade Risk Alert"
+                }
+            },
+            {
+                "title": "Cascade Risk Components",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "himari_l3_cascade_risk_components{component='funding_risk'}",
+                        "legendFormat": "Funding"
+                    },
+                    {
+                        "expr": "himari_l3_cascade_risk_components{component='oi_risk'}",
+                        "legendFormat": "OI Drop"
+                    },
+                    {
+                        "expr": "himari_l3_cascade_risk_components{component='whale_risk'}",
+                        "legendFormat": "Whale Pressure"
+                    },
+                    {
+                        "expr": "himari_l3_cascade_risk_components{component='netflow_risk'}",
+                        "legendFormat": "Netflow"
+                    }
+                ],
+                "gridPos": {
+                    "x": 12,
+                    "y": 0,
+                    "w": 12,
+                    "h": 8
+                }
+            },
+            {
+                "title": "Cascade Recommendations",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "rate(himari_l3_cascade_recommendations_total[5m])",
+                        "legendFormat": "{{recommendation}}"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 8,
+                    "w": 12,
+                    "h": 6
+                }
+            },
+            {
+                "title": "Circuit Breaker State",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "himari_l3_circuit_breaker_state"
+                    }
+                ],
+                "gridPos": {
+                    "x": 12,
+                    "y": 8,
+                    "w": 6,
+                    "h": 6
+                },
+                "mappings": [
+                    {
+                        "value": 0,
+                        "text": "CLOSED"
+                    },
+                    {
+                        "value": 1,
+                        "text": "HALF_OPEN"
+                    },
+                    {
+                        "value": 2,
+                        "text": "OPEN"
+                    }
+                ]
+            },
+            {
+                "title": "Circuit Breaker Success Rate",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "himari_l3_circuit_breaker_success_rate"
+                    }
+                ],
+                "gridPos": {
+                    "x": 18,
+                    "y": 8,
+                    "w": 6,
+                    "h": 6
+                }
+            }
+        ]
+    }
+}

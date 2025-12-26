@@ -1,0 +1,4 @@
+timestamp_ns,timestamp_iso,strategy_id,weight,total_allocated_usd,num_strategies
+1766769226637935600,2025-12-26T17:13:46Z,momentum_btc,0.333333,32250.00,3
+1766769226637935600,2025-12-26T17:13:46Z,momentum_eth,0.333333,32250.00,3
+1766769226637935600,2025-12-26T17:13:46Z,mean_reversion_sol,0.333333,32250.00,3

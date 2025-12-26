@@ -1,0 +1,54 @@
+HIMARI OPUS 2 - Colab Training Instructions
+=============================================
+
+I have prepared the necessary files for your Colab training session since I cannot access your authenticated browser session directly.
+
+Files Prepared:
+1. notebooks/RL_Training_Colab.ipynb (The training notebook)
+2. src.zip (Compressed source code for Layer 3)
+
+-------------------------------------------------------------------------------
+Step 1: Open Colab
+-------------------------------------------------------------------------------
+Go to your Colab link:
+https://colab.research.google.com/drive/1qmo70GrC9dxkHJklUax5033L4737J3wd#scrollTo=8e0244c8
+
+-------------------------------------------------------------------------------
+Step 2: Upload Files
+-------------------------------------------------------------------------------
+1. Click the "Files" icon (folder icon) on the left sidebar.
+2. Click the "Upload to session storage" button.
+3. Upload the following two files from "LAYER 3 POSITIONING LAYER":
+   - notebooks/RL_Training_Colab.ipynb (if not already open)
+   - src.zip
+
+-------------------------------------------------------------------------------
+Step 3: Unzip Source Code
+-------------------------------------------------------------------------------
+Before running the "Setup Environment" cells, add a new code cell at the top 
+and run this command to unzip the source code:
+
+!unzip -o src.zip
+
+-------------------------------------------------------------------------------
+Step 4: Start Training
+-------------------------------------------------------------------------------
+1. Run "Runtime" > "Run all" (Ctrl+F9).
+2. The training will take approximately 8 hours for 1000 episodes.
+3. Ensure you are using a GPU runtime ("Runtime" > "Change runtime type" > "T4 GPU").
+
+-------------------------------------------------------------------------------
+Step 5: Download Model
+-------------------------------------------------------------------------------
+After training completes:
+1. Locate `checkpoints/ppo_final.pt` in the file browser.
+2. Right-click and select "Download".
+3. Save it to `LAYER 3 POSITIONING LAYER/models/ppo_final.pt` on your local machine.
+
+-------------------------------------------------------------------------------
+Notes
+-------------------------------------------------------------------------------
+- If the session disconnects, your files will be lost. Checkpoints are saved 
+  locally in the Colab session, so download intermediate checkpoints if needed.
+- You can monitor progress in the "Visualize Results" section which plots 
+  rewards and Sharpe ratios every 10 episodes.
