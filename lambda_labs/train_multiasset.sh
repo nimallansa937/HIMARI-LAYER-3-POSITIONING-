@@ -25,13 +25,13 @@ cd ~/HIMARI-LAYER-3-POSITIONING-
 # Create local models directory
 mkdir -p models
 
-# Run training with logging
-python3 vertex_training/trainer_multiasset.py \
-    --bucket-name himari-rl-models \
-    --model-dir models/himari-rl-multiasset \
+# Run training with logging (using local trainer, no GCS needed)
+python3 lambda_labs/trainer_multiasset_local.py \
+    --model-dir /tmp/models \
     --symbols BTC-USD ETH-USD SOL-USD \
     --num-episodes 1000 \
     --save-interval 100 \
+    --device cuda \
     2>&1 | tee training_multiasset_ppo.log
 
 echo ""
