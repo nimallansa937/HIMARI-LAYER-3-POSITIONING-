@@ -50,6 +50,10 @@ python3 -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 python3 -c "import torch; print(f'CUDA version: {torch.version.cuda}')"
 python3 -c "import numpy; print(f'NumPy version: {numpy.__version__}')"
 
+# Set PYTHONPATH for imports
+export PYTHONPATH="$HOME/HIMARI-LAYER-3-POSITIONING-/src:$PYTHONPATH"
+echo "export PYTHONPATH=\"\$HOME/HIMARI-LAYER-3-POSITIONING-/src:\$PYTHONPATH\"" >> ~/.bashrc
+
 # Test imports
 echo "7. Testing HIMARI imports..."
 python3 -c "from rl.ppo_agent import PPOAgent; print('✓ PPOAgent OK')"
