@@ -1,0 +1,36 @@
+# HIMARI Layer 3 - GCP Deployment Configuration
+
+layer3_rl:
+  # Enable RL enhancement
+  enable_rl: true
+
+  # Cloud deployment (GCP Cloud Run)
+  deployment_mode: "cloud"  # "cloud" or "local"
+
+  # GCP Cloud Run API endpoint
+  rl_api_endpoint: "https://himari-rl-api-abc123-uc.a.run.app/predict"
+
+  # API timeout (must be < Layer 3 latency budget of 200ms)
+  rl_timeout_ms: 150
+
+  # Fallback behavior
+  fallback_on_timeout: true
+  fallback_multiplier: 1.0  # Use base Kelly if API fails
+
+  # Local model (for testing/development)
+  rl_model_path: "models/ppo_final.pt"  # Used if deployment_mode: "local"
+
+  # Monitoring
+  log_rl_predictions: true
+  log_level: "INFO"
+
+# Portfolio configuration
+portfolio:
+  initial_value: 100000.0
+  max_position_pct: 0.5
+  kelly_fraction: 0.25
+
+# Risk management
+risk:
+  max_daily_loss_pct: 0.02
+  max_leverage: 2.0
