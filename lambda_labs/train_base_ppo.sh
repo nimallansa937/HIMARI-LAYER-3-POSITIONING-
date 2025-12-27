@@ -30,7 +30,6 @@ python3 vertex_training/trainer.py \
     --model-dir models/himari-rl \
     --num-episodes 1000 \
     --save-interval 100 \
-    --device cuda \
     2>&1 | tee training_base_ppo.log
 
 echo ""
