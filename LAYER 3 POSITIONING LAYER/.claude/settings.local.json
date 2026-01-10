@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pytest:*)",
+      "Bash(python example_phase1_fixed.py:*)",
+      "Bash(ls:*)",
+      "Bash(python -c:*)",
+      "Bash(python example_phase2.py:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(python:*)"
+    ]
+  }
+}

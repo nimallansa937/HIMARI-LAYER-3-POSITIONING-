@@ -1,0 +1,82 @@
+# Prometheus Alerts for HIMARI Layer 3
+
+groups:
+  - name: layer3_alerts
+    interval: 30s
+    rules:
+      # Cascade Risk Alerts
+      - alert: HighCascadeRisk
+        expr: himari_l3_cascade_risk_score > 0.8
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High cascade risk detected"
+          description: "Cascade risk score {{ $value }} exceeds critical threshold 0.8"
+
+      - alert: ModerateCascadeRisk
+        expr: himari_l3_cascade_risk_score > 0.6
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Moderate cascade risk detected"
+          description: "Cascade risk score {{ $value }} exceeds warning threshold 0.6"
+
+      # Circuit Breaker Alerts
+      - alert: CircuitBreakerOpen
+        expr: himari_l3_circuit_breaker_state == 2
+        for: 30s
+        labels:
+          severity: warning
+        annotations:
+          summary: "Circuit breaker is OPEN"
+          description: "Colab Pro circuit breaker has opened, using Phase 1 fallback"
+
+      - alert: CircuitBreakerLowSuccessRate
+        expr: himari_l3_circuit_breaker_success_rate < 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Circuit breaker success rate low"
+          description: "Success rate {{ $value }} below 90%"
+
+      # Conformal Scaler Alerts
+      - alert: ConformalNullRejections
+        expr: rate(himari_l3_conformal_null_rejections_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High NULL rejection rate in conformal scaler"
+          description: "{{ $value }} NULL values rejected per second"
+
+      - alert: ConformalInsufficientSamples
+        expr: himari_l3_conformal_samples < 20
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Conformal scaler has insufficient samples"
+          description: "Only {{ $value }} samples available (min 20 required)"
+
+      # Regime Alerts
+      - alert: FrequentRegimeFlips
+        expr: rate(himari_l3_regime_false_flips_total[1h]) > 10
+        for: 5m
+        labels:
+          severity: info
+        annotations:
+          summary: "Frequent regime false flips detected"
+          description: "{{ $value }} false flips per hour, may indicate noisy signals"
+
+      # Configuration Alerts
+      - alert: ConfigValidationFailure
+        expr: rate(himari_l3_config_reloads_total{status="validation_failed"}[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Configuration validation failed"
+          description: "Config reload failed validation, keeping previous config"

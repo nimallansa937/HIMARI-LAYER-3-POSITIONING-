@@ -1,0 +1,26 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# Alert manager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: []
+
+# Load alert rules
+rule_files:
+  - /etc/prometheus/rules/*.yaml
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # HIMARI Layer 3 application
+  - job_name: "himari_layer3"
+    static_configs:
+      - targets: ["host.docker.internal:8000"]
+    metrics_path: /metrics

@@ -1,0 +1,95 @@
+{
+    "dashboard": {
+        "title": "HIMARI Layer 3 - Position Sizing Overview",
+        "tags": [
+            "himari",
+            "layer3",
+            "position-sizing"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "title": "Kelly Fraction Distribution",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, himari_l3_kelly_fraction)",
+                        "legendFormat": "P95"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 12,
+                    "h": 8
+                }
+            },
+            {
+                "title": "Position Size Distribution",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.5, himari_l3_final_position_size_usd)",
+                        "legendFormat": "Median"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.95, himari_l3_final_position_size_usd)",
+                        "legendFormat": "P95"
+                    }
+                ],
+                "gridPos": {
+                    "x": 12,
+                    "y": 0,
+                    "w": 12,
+                    "h": 8
+                }
+            },
+            {
+                "title": "Conformal Scale Factor",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.5, himari_l3_conformal_scale_factor)",
+                        "legendFormat": "Scale Factor"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 8,
+                    "w": 8,
+                    "h": 6
+                }
+            },
+            {
+                "title": "Conformal Samples",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "himari_l3_conformal_samples"
+                    }
+                ],
+                "gridPos": {
+                    "x": 8,
+                    "y": 8,
+                    "w": 8,
+                    "h": 6
+                }
+            },
+            {
+                "title": "Bayesian Win Rate",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "himari_l3_bayesian_win_rate"
+                    }
+                ],
+                "gridPos": {
+                    "x": 16,
+                    "y": 8,
+                    "w": 8,
+                    "h": 6
+                }
+            }
+        ]
+    }
+}

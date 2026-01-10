@@ -1,0 +1,108 @@
+{
+    "dashboard": {
+        "title": "HIMARI Layer 3 - Regime & Cascade Monitoring",
+        "tags": [
+            "himari",
+            "layer3",
+            "regime"
+        ],
+        "timezone": "browser",
+        "panels": [
+            {
+                "title": "Current Regime",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "himari_l3_current_regime",
+                        "legendFormat": "{{regime}}"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 0,
+                    "w": 8,
+                    "h": 6
+                }
+            },
+            {
+                "title": "Regime Multiplier",
+                "type": "gauge",
+                "targets": [
+                    {
+                        "expr": "sum(himari_l3_regime_multiplier)",
+                        "legendFormat": "Multiplier"
+                    }
+                ],
+                "gridPos": {
+                    "x": 8,
+                    "y": 0,
+                    "w": 8,
+                    "h": 6
+                }
+            },
+            {
+                "title": "False Flips Prevented",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "himari_l3_regime_false_flips_total",
+                        "legendFormat": "False Flips"
+                    }
+                ],
+                "gridPos": {
+                    "x": 16,
+                    "y": 0,
+                    "w": 8,
+                    "h": 6
+                }
+            },
+            {
+                "title": "Regime Transitions",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(himari_l3_regime_transitions_total[1h])",
+                        "legendFormat": "{{from_regime}} → {{to_regime}}"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 6,
+                    "w": 12,
+                    "h": 8
+                }
+            },
+            {
+                "title": "Cascade Risk by Component",
+                "type": "heatmap",
+                "targets": [
+                    {
+                        "expr": "himari_l3_cascade_risk_components"
+                    }
+                ],
+                "gridPos": {
+                    "x": 12,
+                    "y": 6,
+                    "w": 12,
+                    "h": 8
+                }
+            },
+            {
+                "title": "Threshold Breaches",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(himari_l3_cascade_threshold_breaches_total[5m])",
+                        "legendFormat": "{{component}}"
+                    }
+                ],
+                "gridPos": {
+                    "x": 0,
+                    "y": 14,
+                    "w": 24,
+                    "h": 6
+                }
+            }
+        ]
+    }
+}

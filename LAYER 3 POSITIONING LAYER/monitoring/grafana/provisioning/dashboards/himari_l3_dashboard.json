@@ -1,0 +1,223 @@
+{
+    "annotations": {
+        "list": []
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": null,
+    "title": "HIMARI Layer 3 - Position Sizing",
+    "uid": "himari-l3-positioning",
+    "version": 1,
+    "panels": [
+        {
+            "title": "Total Ensemble Allocation (USD)",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 0,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_ensemble_weight_total_usd",
+                    "legendFormat": "Total USD"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "currencyUSD",
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 50000
+                            },
+                            {
+                                "color": "red",
+                                "value": 80000
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Position Decisions",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 6,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "sum(himari_l3_position_decisions_total)",
+                    "legendFormat": "Total Decisions"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "blue",
+                                "value": null
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Cascade Risk Score",
+            "type": "gauge",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 12,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_cascade_risk_score",
+                    "legendFormat": "Risk Score"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "min": 0,
+                    "max": 1,
+                    "thresholds": {
+                        "mode": "absolute",
+                        "steps": [
+                            {
+                                "color": "green",
+                                "value": null
+                            },
+                            {
+                                "color": "yellow",
+                                "value": 0.5
+                            },
+                            {
+                                "color": "red",
+                                "value": 0.7
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "title": "Current Regime",
+            "type": "stat",
+            "gridPos": {
+                "h": 4,
+                "w": 6,
+                "x": 18,
+                "y": 0
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_current_regime",
+                    "legendFormat": "{{regime}}"
+                }
+            ]
+        },
+        {
+            "title": "Strategy Weights",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 4
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_ensemble_weight_current",
+                    "legendFormat": "{{strategy_id}}"
+                }
+            ],
+            "fieldConfig": {
+                "defaults": {
+                    "unit": "percentunit"
+                }
+            }
+        },
+        {
+            "title": "Cascade Risk Components",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 4
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_cascade_risk_components",
+                    "legendFormat": "{{component}}"
+                }
+            ]
+        },
+        {
+            "title": "Position Size Distribution",
+            "type": "histogram",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 0,
+                "y": 12
+            },
+            "targets": [
+                {
+                    "expr": "himari_l3_final_position_size_usd_bucket",
+                    "legendFormat": "{{le}}"
+                }
+            ]
+        },
+        {
+            "title": "Regime Transitions",
+            "type": "timeseries",
+            "gridPos": {
+                "h": 8,
+                "w": 12,
+                "x": 12,
+                "y": 12
+            },
+            "targets": [
+                {
+                    "expr": "rate(himari_l3_regime_transitions_total[5m])",
+                    "legendFormat": "Transitions/min"
+                },
+                {
+                    "expr": "himari_l3_regime_false_flips_total",
+                    "legendFormat": "False Flips"
+                }
+            ]
+        }
+    ],
+    "schemaVersion": 39,
+    "tags": [
+        "himari",
+        "layer3",
+        "positioning"
+    ],
+    "templating": {
+        "list": []
+    },
+    "time": {
+        "from": "now-1h",
+        "to": "now"
+    },
+    "refresh": "5s"
+}
