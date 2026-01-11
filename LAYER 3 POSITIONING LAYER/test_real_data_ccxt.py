@@ -508,6 +508,122 @@ def run_hybrid_backtest(
 
 
 # =============================================================================
+# Shuffle Test - Check for Random Luck
+# =============================================================================
+
+def run_shuffle_test(
+    models: List[nn.Module],
+    prices: np.ndarray,
+    initial_capital: float = 100000.0,
+    n_trials: int = 5
+) -> Dict:
+    """
+    Run backtest on shuffled data to check if results are random luck.
+    
+    If Sharpe stays high after shuffle → BUG (look-ahead bias)
+    If Sharpe drops to ~0 after shuffle → REAL EDGE confirmed
+    """
+    print("\n" + "=" * 70)
+    print("🔀 SHUFFLE TEST (Gold Standard for Validation)")
+    print("=" * 70)
+    print("If Sharpe drops to ~0 after shuffle → Strategy has REAL EDGE")
+    print("If Sharpe stays high after shuffle → BUG (look-ahead bias)")
+    print()
+    
+    # Calculate returns
+    returns = np.diff(prices) / prices[:-1]
+    
+    shuffled_sharpes = []
+    
+    for trial in range(n_trials):
+        # Shuffle returns (destroys temporal structure)
+        np.random.seed(trial + 42)
+        shuffled_returns = returns.copy()
+        np.random.shuffle(shuffled_returns)
+        
+        # Reconstruct shuffled prices
+        shuffled_prices = np.zeros(len(prices))
+        shuffled_prices[0] = prices[0]
+        for i in range(len(shuffled_returns)):
+            shuffled_prices[i + 1] = shuffled_prices[i] * (1 + shuffled_returns[i])
+        
+        # Run backtest on shuffled data (silent mode)
+        regime_detector = RegimeDetector(lookback=50)
+        position_sizer = BoundedDeltaPositionSizer()
+        feature_eng = HybridFeatureEngineer(initial_capital=initial_capital)
+        
+        capital = initial_capital
+        position_usd = 0.0
+        prev_position_pct = 0.0
+        returns_list = []
+        
+        for t in range(1, len(shuffled_prices)):
+            ret = shuffled_returns[t-1] if t-1 < len(shuffled_returns) else 0
+            
+            regime_detector.update(ret)
+            position_sizer.update_returns(ret)
+            feature_eng.update(shuffled_prices[t])
+            
+            if t < 60:
+                returns_list.append(0)
+                continue
+            
+            regime_name, market_regime = regime_detector.detect()
+            
+            state = feature_eng.get_state(
+                current_position_usd=position_usd,
+                current_capital=capital,
+                initial_capital=initial_capital,
+                regime_name=regime_name
+            )
+            
+            if regime_name == "bull":
+                target_position = kelly_momentum_position(
+                    feature_eng.returns_history,
+                    capital
+                )
+            else:
+                rl_outputs = [predict_rl_raw(model, state) for model in models]
+                ensemble_output = np.mean(rl_outputs)
+                
+                target_position, _ = position_sizer.apply_bounded_delta(
+                    raw_rl_output=ensemble_output,
+                    capital=capital,
+                    regime=market_regime
+                )
+            
+            position_pct = target_position / capital if capital > 0 else 0
+            position_change = abs(position_pct - prev_position_pct)
+            commission = position_change * COMMISSION_RATE
+            
+            strategy_return = position_pct * ret - commission
+            
+            capital *= (1 + strategy_return)
+            position_usd = target_position
+            prev_position_pct = position_pct
+            returns_list.append(strategy_return)
+        
+        returns_arr = np.array(returns_list)
+        sharpe = np.mean(returns_arr) / (np.std(returns_arr) + 1e-8) * HOURLY_ANNUALIZATION
+        total_ret = (capital - initial_capital) / initial_capital
+        
+        shuffled_sharpes.append(sharpe)
+        print(f"   Trial {trial + 1}: Sharpe {sharpe:+.4f}, Return {total_ret*100:+.2f}%")
+    
+    avg_shuffled_sharpe = np.mean(shuffled_sharpes)
+    std_shuffled_sharpe = np.std(shuffled_sharpes)
+    
+    print()
+    print(f"   Average Shuffled Sharpe: {avg_shuffled_sharpe:+.4f} ± {std_shuffled_sharpe:.4f}")
+    
+    return {
+        'avg_shuffled_sharpe': avg_shuffled_sharpe,
+        'std_shuffled_sharpe': std_shuffled_sharpe,
+        'all_sharpes': shuffled_sharpes
+    }
+
+
+# =============================================================================
 # Main
 # =============================================================================
 
@@ -604,6 +720,38 @@ def main():
     else:
         diff = bh_sharpe - results['sharpe']
         print(f"\n📉 Underperforms Buy & Hold by {diff:.4f} Sharpe points")
+    
+    print("=" * 70)
+    
+    # ==========================================================================
+    # SHUFFLE TEST - Check for Random Luck
+    # ==========================================================================
+    
+    shuffle_results = run_shuffle_test(models, prices, n_trials=5)
+    
+    print("\n" + "=" * 70)
+    print("🔍 SHUFFLE TEST VERDICT")
+    print("=" * 70)
+    
+    original_sharpe = results['sharpe']
+    shuffled_sharpe = shuffle_results['avg_shuffled_sharpe']
+    sharpe_drop = original_sharpe - shuffled_sharpe
+    
+    print(f"\n   Original Sharpe:  {original_sharpe:+.4f}")
+    print(f"   Shuffled Sharpe:  {shuffled_sharpe:+.4f}")
+    print(f"   Sharpe Drop:      {sharpe_drop:+.4f}")
+    
+    if abs(shuffled_sharpe) < 0.5 and sharpe_drop > 1.0:
+        print(f"\n   ✅ SHUFFLE TEST PASSED!")
+        print(f"      Edge is DESTROYED by shuffling → REAL PREDICTIVE VALUE")
+        print(f"      Strategy exploits genuine temporal patterns in the data.")
+    elif abs(shuffled_sharpe) < 1.0 and sharpe_drop > 0.5:
+        print(f"\n   ⚠️ PARTIAL PASS")
+        print(f"      Some edge remains after shuffle, but mostly legitimate.")
+    else:
+        print(f"\n   ❌ SHUFFLE TEST FAILED!")
+        print(f"      Edge SURVIVES shuffling → Likely BUG (look-ahead bias)")
+        print(f"      Review: regime detection, position sizing timing.")
     
     print("=" * 70)
 
