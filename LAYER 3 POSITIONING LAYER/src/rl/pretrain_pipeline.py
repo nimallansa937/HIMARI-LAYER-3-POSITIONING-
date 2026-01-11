@@ -49,9 +49,23 @@ class SyntheticTradingEnv:
         self.config = env_config
         self.state_encoder = StateEncoder()
 
-        self.prices = scenario['prices']
-        self.returns = scenario['returns']
-        self.regimes = scenario['regimes']
+        # Handle multiple data formats
+        if 'prices' in scenario:
+            # Original format from synthetic_data_generator.py
+            self.prices = scenario['prices']
+            self.returns = scenario['returns']
+            self.regimes = scenario.get('regimes', ['normal'] * len(self.prices))
+        elif 'returns' in scenario:
+            # Balanced format from balanced_data_generator.py
+            self.returns = np.array(scenario['returns'])
+            # Compute prices from returns (starting at 50000)
+            self.prices = 50000.0 * np.cumprod(1 + self.returns)
+            self.prices = np.insert(self.prices, 0, 50000.0)  # Add initial price
+            # Map label to regime
+            label = scenario.get('label', scenario.get('type', 'normal'))
+            self.regimes = [label] * len(self.prices)
+        else:
+            raise ValueError(f"Unknown scenario format. Keys: {scenario.keys()}")
 
         self.step_idx = 0
         self.max_steps = min(len(self.prices) - 1, env_config.max_steps)
