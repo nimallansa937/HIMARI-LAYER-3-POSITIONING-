@@ -316,6 +316,12 @@ class PPOAgent:
         self.policy.train()
         self.training = True
 
+    def set_learning_rate(self, lr: float):
+        """Set learning rate for optimizer."""
+        for param_group in self.optimizer.param_groups:
+            param_group['lr'] = lr
+        logger.info(f"Learning rate set to {lr}")
+
 
 def test_ppo_agent():
     """Test PPO agent."""
