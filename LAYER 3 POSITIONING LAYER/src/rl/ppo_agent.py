@@ -300,7 +300,7 @@ class PPOAgent:
 
     def load(self, filepath: str):
         """Load model checkpoint."""
-        checkpoint = torch.load(filepath, map_location=self.device)
+        checkpoint = torch.load(filepath, map_location=self.device, weights_only=False)
         self.policy.load_state_dict(checkpoint['policy_state_dict'])
         self.optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         self.config = checkpoint['config']
